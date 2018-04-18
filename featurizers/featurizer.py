@@ -19,17 +19,19 @@ def featurize(X,cutoff=False,T=15):
     split_array=split_array.astype('int')
     separate=np.split(X,split_array)
     e=[]
+    print(separate[0].shape)
     for tranche in separate: 
         energies=[]
         tranche=np.transpose(tranche)
         for i in range(16): 
-            print(tranche[i].shape)
+            #print(tranche[i].shape)
+            print(tranche.shape)
             FT=np.fft.fft(tranche[i])
-            energy=np.linalg.norm(FT)**2
+            energy=np.log(np.linalg.norm(FT)**2)
             energies.append(energy)
         e.append(np.array(energies))
     FF=np.fft.fft(X)    
-    total_energy=compute_norm(FF)
+    total_energy=np.log(compute_norm(FF))
     mean_energy=np.mean(e,axis=0)
     std_energy=np.std(e,axis=0)
     covariance=np.cov(np.transpose(e))
@@ -37,7 +39,6 @@ def featurize(X,cutoff=False,T=15):
     e=np.array(e)
     ##reshaping stuff
     e=e.reshape(-1)
-    lc=covariance.shape[0]*covariance.shape[1]
     covariance=covariance.reshape(-1)
     return np.hstack((total_energy,np.array(e),mean_energy,std_energy,covariance))
 
@@ -55,7 +56,7 @@ def featurize_weak(X,cutoff=False,T=15):
     e=[]
     for tranche in separate: 
         energies=[]
-        print(tranche.shape)
+        #print(tranche.shape)
         for i in range(16): 
             FT=np.fft.fft(tranche[i])
             energy=np.linalg.norm(FT)**2
@@ -75,7 +76,6 @@ def featurize_FF(X,cutoff=50):
         FF=np.fft.fft(X)
         FFshort=FF[0:cutoff]
         transforms.append(FFshort)
-
 
 
 
